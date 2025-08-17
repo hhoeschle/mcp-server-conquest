@@ -91,6 +91,31 @@ class TagGroup(BaseModelConquest):
     tags: list[Tag] | None = None
 
 
+class RuleTarget(BaseModelConquest):
+    type: Literal["SELF", "WARBAND", "LIST"]
+
+
+class Rule(BaseModelConquest):
+    type: Literal[
+        "CHARACTER",
+        "WARBAND_CONSTITUTION",
+        "WARBAND",
+        "STANDARD_BEARER",
+        "OMNIPOTENCE",
+        "FINEST_CAVALRY",
+        "ONLY_ONE_OF",
+        "BIOTIC_HIVE",
+        "RUTHLESS_SOVEREIGNS",
+        "SCION_OF_DEATH_WARBAND",
+        "SCION_OF_WAR_WARBAND",
+        "THUNDER_CHIEFTAIN_WARBAND",
+        "MODULAR_REGIMENT",
+        "LEADER_THRESHOLD",
+        "BOUND_ELEMENTALS",
+    ]
+    targets: RuleTarget
+
+
 EntrySlug = Annotated[str, Field(description="The unique identifier for the entry within a faction.")]
 
 
@@ -106,3 +131,4 @@ class Entry(BaseModelConquest):
     profiles: list[Profile] | None = None
     type: Literal["Infantry", "Brute", "Cavalry", "Monster", "Chariot"]
     tag_groups: list[TagGroup] | None = None
+    rules: list[Rule] | None = None
