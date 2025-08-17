@@ -18,9 +18,9 @@ packages = ["conquest"]
 line-length = 120
 
 [dependency-groups]
-test = [
-    "pytest>=8.4.1",
-    "pytest-asyncio>=1.1.0",
-    "pytest-mock>=3.14.1",
-    "trio>=0.30.0",
-]
+test = ["pytest>=8.4.1", "pytest-asyncio>=1.1.0", "pytest-mock>=3.14.1"]
+
+[tool.pytest.ini_options]
+minversion = "8.4"
+addopts = "-vv"
+testpaths = ["tests"]

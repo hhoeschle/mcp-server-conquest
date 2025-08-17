@@ -18,6 +18,8 @@ class Faction(BaseModelConquest):
     slug: FactionSlug
     name: str
     entries: dict[str, "Entry"] = {}
+    queries: list["Query"]
+    entry_groups: list["EntryGroup"] = []
 
 
 GameSlug = Annotated[
@@ -35,6 +37,9 @@ class Game(BaseModelConquest):
 class StatLine(BaseModelConquest):
     march: PositiveInt | Literal["-"] = Field(alias="M", description="March value of the unit.")
     clash: PositiveInt = Field(alias="C", description="Clash value of the unit.")
+    command_range: PositiveInt | Literal["-"] | None = Field(
+        alias="CR", description="Command range value of the unit.", default=None
+    )
     volley: NonNegativeInt | Literal["-"] = Field(alias="V", description="Volley value of the unit.")
     attack: PositiveInt = Field(alias="A", description="Attack value of the unit.")
     defense: NonNegativeInt | Literal["-"] = Field(alias="D", description="Defense value of the unit.")
@@ -46,6 +51,7 @@ class StatLine(BaseModelConquest):
 class Profile(BaseModelConquest):
     profile_name: str
     statline: StatLine
+    tag_groups: list["TagGroup"] | None = None
 
 
 DirectiveSlug = Annotated[str, Field(description="The unique identifier for the directive.")]
@@ -57,20 +63,20 @@ class Directive(BaseModelConquest):
     description: str | None = None
 
 
-TagQueryRequestSlug = Annotated[str, Field(description="The unique identifier for the tag query request.")]
+QueryRequestSlug = Annotated[str, Field(description="The unique identifier for the query request.")]
 
 
-class TagQueryRequest(BaseModelConquest):
-    slug: TagQueryRequestSlug
-    type: Literal["directives"]
+class QueryRequest(BaseModelConquest):
+    slug: QueryRequestSlug
+    type: Literal["directives", "faction-options"]
 
 
-TagQueryLabel = Annotated[str, Field(description="The unique identifier for the tag query.")]
+QueryLabel = Annotated[str, Field(description="The unique identifier for the query.")]
 
 
-class TagQuery(BaseModelConquest):
-    label: TagQueryLabel
-    request: TagQueryRequest
+class Query(BaseModelConquest):
+    label: QueryLabel
+    request: QueryRequest
 
 
 TagSlug = Annotated[str, Field(description="The unique identifier for the tag.")]
@@ -79,7 +85,10 @@ TagSlug = Annotated[str, Field(description="The unique identifier for the tag.")
 class Tag(BaseModelConquest):
     name: str
     slug: TagSlug
-    query: TagQuery | None = None
+    query: Query | None = None
+    variable: PositiveInt | None = None
+    range: PositiveInt | None = None
+    tags: list["Tag"] | None = None
 
 
 TagGroupSlug = Annotated[str, Field(description="The unique identifier for the tag group.")]
@@ -114,6 +123,40 @@ class Rule(BaseModelConquest):
         "BOUND_ELEMENTALS",
     ]
     targets: RuleTarget
+    params: dict[str, str | int | float | bool] | None = None
+
+
+OptionGroupSlug = Annotated[str, Field(description="The unique identifier for the option group.")]
+
+
+class OptionGroup(BaseModelConquest):
+    slug: OptionGroupSlug | None = None
+    description: str | None = None
+    name: str
+    min_options: NonNegativeInt | None = None
+    max_options: PositiveInt | None = None
+    active: bool | None = None
+    groups: list["OptionGroup"] | None = None
+    query: Query | None = None
+    orphans: list["OptionOrphan"] | None = None
+
+
+class OptionOrphan(BaseModelConquest):
+    slug: str | None = None
+    name: str | None = None
+    cost: NonNegativeInt | None = None
+    active: bool | None = None
+    query: Query | None = None
+
+
+class Options(BaseModelConquest):
+    groups: list[OptionGroup] | None = None
+    orphanes: list[OptionOrphan] | None = None
+
+
+class Text(BaseModelConquest):
+    content: str
+    tag: str | None = None
 
 
 EntrySlug = Annotated[str, Field(description="The unique identifier for the entry within a faction.")]
@@ -124,11 +167,24 @@ class Entry(BaseModelConquest):
     cost: NonNegativeInt | Literal["*", "Preview"]
     game_class: Literal["Light", "Medium", "Brute", "Heavy"] | None = None
     size: NonNegativeInt
+    size_step: NonNegativeInt | None = None
+    size_step_cost: NonNegativeInt | None = None
     min_size: NonNegativeInt
     max_size: PositiveInt
     name: str
     statline: StatLine | None = None
     profiles: list[Profile] | None = None
     type: Literal["Infantry", "Brute", "Cavalry", "Monster", "Chariot"]
+    texts: list[Text] | None = None
     tag_groups: list[TagGroup] | None = None
     rules: list[Rule] | None = None
+    options: Options | None = None
+
+
+EntryGroupSlug = Annotated[str, Field(description="The unique identifier for the entry group.")]
+
+
+class EntryGroup(BaseModelConquest):
+    entry_slugs: list[EntrySlug] = Field(default_factory=list, description="List of entry slugs in this group.")
+    name: str = Field(description="Name of the entry group.")
+    slug: EntryGroupSlug

@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
         ]
     ],
 )
-@pytest.mark.anyio
+@pytest.mark.asyncio
 async def test_get_faction_for_game(
     game_slug: GameSlug,
     faction_slug: FactionSlug,
@@ -39,3 +39,7 @@ async def test_get_faction_for_game(
         data = response.json()
         faction = Faction(**data)
         logger.info(f"Retrieved faction for game '{game_slug}': {faction}")
+
+        assert data == faction.model_dump(by_alias=True, exclude_unset=True), (
+            f"Data mismatch for faction '{faction_slug}' in game '{game_slug}'"
+        )
