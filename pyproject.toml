@@ -1,0 +1,26 @@
+[project]
+name = "mcp-server-conquest"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["mcp[cli]>=1.12.2", "pydantic>=2.11.7"]
+
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[tool.hatch.build.targets.wheel]
+packages = ["conquest"]
+
+
+[tool.ruff]
+line-length = 120
+
+[dependency-groups]
+test = [
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
+    "pytest-mock>=3.14.1",
+    "trio>=0.30.0",
+]
