@@ -3,6 +3,7 @@ from conquest.army_builder.create_army_builder_json import create_army_builder_j
 # from conquest.army_builder.get_army_entry import get_army_entry
 from conquest.core.get_directive_for_game import get_directive_for_game
 from conquest.core.get_faction_for_game import get_faction_for_game
+from conquest.core.get_faction_options_for_game import get_faction_options_for_game
 from conquest.core.get_games_and_factions import get_games_and_factions
 from conquest.core.mcp import mcp
 
@@ -10,6 +11,7 @@ assert [
     get_directive_for_game,
     get_games_and_factions,
     get_faction_for_game,
+    get_faction_options_for_game,
     create_army_builder_json,
     # get_army_entry,
 ]

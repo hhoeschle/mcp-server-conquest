@@ -30,5 +30,5 @@ async def get_faction_for_game(
             return Faction(**data)
         except Exception as e:
             await ctx.error(f"Error fetching units for faction '{faction_slug}' in game '{game_slug}': {e}")
-            return Faction(slug=faction_slug, name="", entries={})
-    return Faction(slug=faction_slug, name="", entries={})
+            return Faction(slug=faction_slug, name="", entries={}, queries=[], entry_groups=[])
+    return Faction(slug=faction_slug, name="", entries={}, queries=[], entry_groups=[])

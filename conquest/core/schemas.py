@@ -18,7 +18,7 @@ class Faction(BaseModelConquest):
     slug: FactionSlug
     name: str
     entries: dict[str, "Entry"] = {}
-    queries: list["Query"]
+    queries: list["Query"] | None = None
     entry_groups: list["EntryGroup"] = []
 
 
@@ -49,6 +49,7 @@ class StatLine(BaseModelConquest):
 
 
 class Profile(BaseModelConquest):
+    name: str | None = None
     profile_name: str
     statline: StatLine
     tag_groups: list["TagGroup"] | None = None
@@ -101,7 +102,7 @@ class TagGroup(BaseModelConquest):
 
 
 class RuleTarget(BaseModelConquest):
-    type: Literal["SELF", "WARBAND", "LIST"]
+    type: Literal["SELF", "WARBAND", "LIST", "REGIMENT", "ALL_REGIMENTS", "REGIMENTS"]
 
 
 class Rule(BaseModelConquest):
@@ -126,6 +127,30 @@ class Rule(BaseModelConquest):
     params: dict[str, str | int | float | bool] | None = None
 
 
+class EffectParams(BaseModelConquest):
+    tags: list[Tag] | list[str] | str | None = None
+    tag_group: TagGroup | str | None = None
+    key: Literal["CR", "M", "W", "A", "D", "R", "E", "C"] | None = None
+    operation: Literal["add"] | None = None
+    variable: NonNegativeInt | dict | None = None
+
+
+class Effect(BaseModelConquest):
+    type: Literal[
+        "MODIFY_TAG",
+        "ADD_TAGS",
+        "MODIFY_STAT",
+        "MODIFY_OPTION_GROUP",
+        "MODIFY_OPTION_COST",
+        "BERGONT_RAEGH",
+        "HELLBRINGER_SORCERER",
+        "FERRIC_THRONE",
+        "REMOVE_TAGS",
+    ]
+    targets: RuleTarget | None = None
+    params: EffectParams | None = None
+
+
 OptionGroupSlug = Annotated[str, Field(description="The unique identifier for the option group.")]
 
 
@@ -147,6 +172,7 @@ class OptionOrphan(BaseModelConquest):
     cost: NonNegativeInt | None = None
     active: bool | None = None
     query: Query | None = None
+    effects: list[Effect] | None = None
 
 
 class Options(BaseModelConquest):
@@ -188,3 +214,9 @@ class EntryGroup(BaseModelConquest):
     entry_slugs: list[EntrySlug] = Field(default_factory=list, description="List of entry slugs in this group.")
     name: str = Field(description="Name of the entry group.")
     slug: EntryGroupSlug
+
+
+class FactionOption(BaseModelConquest):
+    slug: str
+    name: str
+    groups: list[TagGroup] | None = None
